@@ -1,28 +1,30 @@
 import './App.css';
 import { useState } from 'react';
 import React from 'react';
-
+import ArticleList from './components/ArticleList';
+import Form from './components/Form';
+import { fetchArticles } from './components/APIService';
+import { Box } from '@mui/material';
 function App() {
   const [articles, setArticles] = useState([]);
+  const [editedArticle, setEditedArticle] = useState(null);
 
   React.useEffect(() => {
-    fetch('http://localhost:5000/get')
-      .then((response) => response.json())
-      .then((response) => setArticles(response))
+    fetchArticles()
+      .then((articles) => setArticles(articles))
       .catch((err) => console.log(err));
-  });
+  }, []);
+
+  const editArticle = (articleForEdit) => {
+    setEditedArticle(articleForEdit);
+    // console.log(editedArticle);
+  };
 
   return (
-    <div className="App">
-      {articles.map((article) => {
-        return (
-          <div>
-            <h1>{article.title}</h1>
-            <p>{article.body}</p>
-          </div>
-        );
-      })}
-    </div>
+    <Box display="flex" className="App">
+      <ArticleList articles={articles} editArticle={editArticle} />
+      {editedArticle ? <Form editedArticle={editedArticle} /> : null}
+    </Box>
   );
 }
 

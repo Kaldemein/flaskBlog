@@ -2,11 +2,13 @@ import datetime
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from config import DB_URL
 
 app = Flask(__name__)
 CORS(app)
+
+
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -32,7 +34,7 @@ class ArticlesSchema(ma.Schema):
         
 article_schema = ArticlesSchema()        
 articles_schema = ArticlesSchema(many=True)
-  
+
 
 
 
@@ -58,6 +60,7 @@ def create_articles():
     return article_schema.jsonify(article)
 
 @app.route('/update/<id>/', methods=['PUT'])
+@cross_origin()
 def update_article(id):
     article = Articles.query.get(id)
     
