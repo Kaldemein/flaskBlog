@@ -7,7 +7,11 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 
-export default function ArticleList({ articles, editArticle }) {
+export default function ArticleList({
+  articles,
+  editArticle,
+  onDeleteArticle,
+}) {
   return (
     <Box display="flex" flexDirection="column">
       {articles.map((article) => {
@@ -39,10 +43,17 @@ export default function ArticleList({ articles, editArticle }) {
                   variant="outlined"
                   color="error"
                   startIcon={<DeleteIcon />}
+                  onClick={() => onDeleteArticle(article.id)}
                 >
                   Delete
                 </Button>
                 <Button
+                  sx={{
+                    bgcolor: '#758be6',
+                    '&:hover': {
+                      backgroundColor: '#5f7bed', // Изменение фона кнопки
+                    },
+                  }}
                   onClick={() => editArticle(article)}
                   variant="contained"
                   endIcon={<EditIcon />}

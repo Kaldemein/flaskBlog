@@ -12,13 +12,18 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { updateArticles } from './APIService';
 
-export default function Form({ editedArticle }) {
+export default function Form({ editedArticle, closeEditArticle }) {
   const [title, setTitle] = useState('');
+  const [prevTitle, setPrevTitle] = useState('');
+
   const [body, setBody] = useState('');
+  const [prevBody, setPrevBody] = useState('');
 
   useEffect(() => {
     setTitle(editedArticle.title);
+    setPrevTitle(editedArticle.title);
     setBody(editedArticle.body);
+    setPrevBody(editedArticle.body);
   }, [editedArticle]);
 
   const onUpdate = () => {
@@ -32,7 +37,6 @@ export default function Form({ editedArticle }) {
       sx={{ width: 800, height: 300, marginTop: 2, marginLeft: 2 }}
     >
       <CardMedia
-        // sx={{ height: 80 }}
         image="/static/images/cards/contemplative-reptile.jpg"
         title="green iguana"
       />
@@ -48,7 +52,7 @@ export default function Form({ editedArticle }) {
           <div>
             <h3>Edit your article</h3>
             <TextField
-              id="standard-multiline-static"
+              id="title"
               label="New body"
               multiline
               maxRows={4}
@@ -58,7 +62,7 @@ export default function Form({ editedArticle }) {
             />
 
             <TextField
-              id="standard-multiline-static"
+              id="body"
               label="New body"
               multiline
               maxRows={4}
@@ -79,10 +83,17 @@ export default function Form({ editedArticle }) {
             variant="outlined"
             color="error"
             startIcon={<CloseIcon />}
+            onClick={() => closeEditArticle()}
           >
             Cancel
           </Button>
           <Button
+            sx={{
+              bgcolor: '#758be6',
+              '&:hover': {
+                backgroundColor: '#5f7bed', // Изменение фона кнопки
+              },
+            }}
             onClick={() => onUpdate()}
             variant="contained"
             endIcon={<CheckIcon />}

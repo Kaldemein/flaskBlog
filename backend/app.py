@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_cors import CORS, cross_origin
 from config import DB_URL
+from marshmallow import Schema, fields, validate, ValidationError
+
 
 app = Flask(__name__)
 CORS(app)
@@ -31,11 +33,14 @@ class Articles(db.Model):
 class ArticlesSchema(ma.Schema):
     class Meta:
         fields = ('id', 'title', 'body', 'datetime')
+    id = fields.Int(dump_only=True)
+    title = fields.Str(required=True, validate=validate.Length(min=1, max=100))
+    body = fields.Str(required=True)
+    datetime = fields.DateTime(dump_only=True)
+
         
 article_schema = ArticlesSchema()        
 articles_schema = ArticlesSchema(many=True)
-
-
 
 
 #REST
@@ -52,26 +57,43 @@ def get_article(id):
 
 @app.route('/create', methods=['POST'])
 def create_articles():
-    title = request.json['title']
-    body = request.json['body']
-    article = Articles(title, body)
-    db.session.add(article)
-    db.session.commit()
-    return article_schema.jsonify(article)
+    json_data = request.json
+    try:
+        data = article_schema.load(json_data) #пытается десериализовать и валидировать данные из json_data с использованием схемы.
+        title = data['title']
+        body = data['body']
+        article = Articles(title, body)
+        db.session.add(article)
+        db.session.commit()
+        # Сериализация и отправка ответа
+        return article_schema.jsonify(article), 201
+    except ValidationError as err:
+        return jsonify({"message": "Validation error", "errors": err.messages}), 400
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+        
+
 
 @app.route('/update/<id>/', methods=['PUT'])
 @cross_origin()
 def update_article(id):
-    article = Articles.query.get(id)
+    json_data = request.json
+    try:
+        data = article_schema.load(json_data)
+        
+        article = Articles.query.get(id)
+        if not article:
+            return {'message': 'Article not found'}, 404
+        
+        article.title = data['title']
+        article.body = data['body']
+        
+        db.session.commit()
+        return article_schema.jsonify(article), 200
     
-    title = request.json['title']
-    body = request.json['body']
-    
-    article.title = title
-    article.body = body
-    
-    db.session.commit()
-    return article_schema.jsonify(article)
+    except ValidationError as err:
+        return jsonify({"message": err.messages}), 400
+
 
 @app.route('/delete/<id>/', methods=['DELETE'])
 def delete_article(id):
