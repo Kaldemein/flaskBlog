@@ -12,6 +12,7 @@ import CardMedia from '@mui/material/CardMedia';
 import TextField from '@mui/material/TextField';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import { Link } from 'react-router-dom';
 
 const style = {
   position: 'absolute',
@@ -24,7 +25,11 @@ const style = {
   // p: 4,
 };
 
-export default function ButtonAppBar({ onCreateArticle }) {
+export default function ButtonAppBar({
+  onCreateArticle,
+  setAuthorized,
+  authorized,
+}) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -37,6 +42,11 @@ export default function ButtonAppBar({ onCreateArticle }) {
     setTitle(null);
     setBody(null);
     setOpen(false);
+  };
+
+  const logOut = () => {
+    localStorage.removeItem('token');
+    setAuthorized(false);
   };
 
   return (
@@ -61,9 +71,66 @@ export default function ButtonAppBar({ onCreateArticle }) {
             Blog
           </Typography>
           <div>
-            <Button sx={{ color: 'white' }} onClick={handleOpen}>
-              Create
-            </Button>
+            <Box display="flex">
+              <Button
+                variant="contained"
+                sx={{
+                  marginLeft: 2,
+                  bgcolor: 'white',
+                  color: '#1976d2',
+                  '&:hover': {
+                    backgroundColor: 'rgba(233, 229, 255, 0.8)', // Изменение фона кнопки
+                  },
+                }}
+                onClick={handleOpen}
+              >
+                Create
+              </Button>
+              <div></div>
+              {authorized ? (
+                <Button
+                  sx={{
+                    color: 'white',
+                    marginLeft: 1,
+                  }}
+                  variant="text"
+                  onClick={() => logOut()}
+                >
+                  Log out
+                </Button>
+              ) : (
+                <div>
+                  <Link to="/login">
+                    <Button
+                      sx={{
+                        marginLeft: 1,
+                        backgroundColor: 'rgba(61, 75, 255, 0.8)',
+                        '&:hover': {
+                          backgroundColor: 'rgba(16, 34, 255, 0.8)',
+                        },
+                      }}
+                      variant="contained"
+                    >
+                      Log in
+                    </Button>
+                  </Link>
+                  <Link to="/register">
+                    <Button
+                      sx={{
+                        marginLeft: 1,
+                        backgroundColor: 'rgba(61, 75, 255, 0.8)',
+                        '&:hover': {
+                          backgroundColor: 'rgba(16, 34, 255, 0.8)',
+                        },
+                      }}
+                      variant="contained"
+                    >
+                      Register
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </Box>
             <Modal
               open={open}
               onClose={handleClose}

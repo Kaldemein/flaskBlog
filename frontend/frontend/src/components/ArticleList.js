@@ -15,6 +15,7 @@ export default function ArticleList({
   return (
     <Box display="flex" flexDirection="column">
       {articles.map((article) => {
+        console.log(article.author.username);
         return (
           <Card sx={{ width: 800, marginTop: 2 }}>
             <CardMedia
@@ -23,6 +24,9 @@ export default function ArticleList({
               title="green iguana"
             />
             <CardContent>
+              <Typography gutterBottom variant="h6" component="div">
+                {article.author.username}
+              </Typography>
               <Typography gutterBottom variant="h5" component="div">
                 {article.title}
               </Typography>

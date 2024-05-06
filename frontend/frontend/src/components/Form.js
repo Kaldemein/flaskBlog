@@ -10,9 +10,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import { updateArticles } from './APIService';
 
-export default function Form({ editedArticle, closeEditArticle }) {
+export default function Form({
+  articleForEdit,
+  closeEditArticle,
+  onUpdate,
+}) {
   const [title, setTitle] = useState('');
   const [prevTitle, setPrevTitle] = useState('');
 
@@ -20,17 +23,11 @@ export default function Form({ editedArticle, closeEditArticle }) {
   const [prevBody, setPrevBody] = useState('');
 
   useEffect(() => {
-    setTitle(editedArticle.title);
-    setPrevTitle(editedArticle.title);
-    setBody(editedArticle.body);
-    setPrevBody(editedArticle.body);
-  }, [editedArticle]);
-
-  const onUpdate = () => {
-    updateArticles(editedArticle.id, { title, body })
-      .then((response) => console.log(response))
-      .catch((err) => console.log(err));
-  };
+    setTitle(articleForEdit.title);
+    setPrevTitle(articleForEdit.title);
+    setBody(articleForEdit.body);
+    setPrevBody(articleForEdit.body);
+  }, [articleForEdit]);
 
   return (
     <Card
@@ -91,10 +88,10 @@ export default function Form({ editedArticle, closeEditArticle }) {
             sx={{
               bgcolor: '#758be6',
               '&:hover': {
-                backgroundColor: '#5f7bed', // Изменение фона кнопки
+                backgroundColor: '#5f7bed',
               },
             }}
-            onClick={() => onUpdate()}
+            onClick={() => onUpdate(articleForEdit, { title, body })}
             variant="contained"
             endIcon={<CheckIcon />}
           >
